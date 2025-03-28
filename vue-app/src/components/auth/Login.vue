@@ -1,26 +1,47 @@
+<script setup>
+import { ref } from 'vue';
+
+const email = ref('');
+const password = ref('');
+
+const login = () => {
+  console.log('Logging in with:', { email: email.value, password: password.value });
+  console.log('it is working');
+};
+</script>
+
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h2 class="text-2xl font-bold">Login</h2>
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-bold text-center mb-4">Login</h2>
       <form @submit.prevent="login" class="space-y-4">
-        <input v-model="email" type="email" placeholder="Email" class="p-2 border rounded" required />
-        <input v-model="password" type="password" placeholder="Password" class="p-2 border rounded" required />
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
+        <div>
+          <label for="email" class="block font-medium">Email</label>
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+            required
+          />
+        </div>
+        <div>
+          <label for="password" class="block font-medium">Password</label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+        >
+          Login
+        </button>
       </form>
-      <router-link to="/register" class="text-blue-500">Register</router-link>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  
-  const email = ref('');
-  const password = ref('');
-  const router = useRouter();
-  
-  const login = () => {
-    if (email.value && password.value) {
-      router.push('/profile');
-    }
-  };
-  </script>
+  </div>
+</template>
