@@ -26,7 +26,7 @@ const login = () => {
           />
         </div>
         <div>
-          <label for="password" class="block font-medium">Password</label>
+          <label for="password" class="block font-medium">enter Password</label>
           <input
             id="password"
             v-model="password"
