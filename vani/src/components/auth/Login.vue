@@ -1,47 +1,53 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { setUserSession } from "../../utils/auth";
 
-const email = ref('');
-const password = ref('');
+defineProps({
+  switchView: {
+    type: Function,
+    required: true,
+  },
+});
+
+const router = useRouter();
+const username = ref("");
+const password = ref("");
 
 const login = () => {
-  console.log('Logging in with:', { email: email.value, password: password.value });
-  console.log('it is working');
+  if (username.value && password.value) {
+    setUserSession({ username: username.value });
+    router.push("/home");
+  } else {
+    alert("Please enter credentials.");
+  }
 };
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
-      <h2 class="text-2xl font-bold text-center mb-4">Login</h2>
-      <form @submit.prevent="login" class="space-y-4">
-        <div>
-          <label for="email" class="block font-medium">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-            required
-          />
-        </div>
-        <div>
-          <label for="password" class="block font-medium">enter Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-        >
-          Login
-        </button>
-      </form>
-    </div>
+  <div class="p-6 bg-gray-100 rounded shadow-md w-80">
+    <h2 class="text-2xl font-bold mb-4">Login</h2>
+    <input
+      v-model="username"
+      type="text"
+      placeholder="Username"
+      class="w-full p-2 mb-2 border rounded"
+    />
+    <input
+      v-model="password"
+      type="password"
+      placeholder="Password"
+      class="w-full p-2 mb-2 border rounded"
+    />
+    <button @click="login" class="w-full p-2 bg-blue-500 text-white rounded">
+      Login
+    </button>
+    
+    <p class="mt-2 text-sm">
+      Don't have an account?
+      <button @click="$emit('switchView', 'register')" class="text-blue-500 underline">
+        Register
+      </button>
+    </p>
   </div>
 </template>

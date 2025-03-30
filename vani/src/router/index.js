@@ -1,17 +1,28 @@
-import { createRouter, createWebHashHistory } from 'vue-router'; // Use Hash Mode for GitHub Pages
-import Login from '../components/auth/Login.vue';
-import Register from '../components/auth/Register.vue';
-import Profile from '../components/auth/Profile.vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import Auth from '../views/Auth.vue';
+import Home from '../views/Home.vue';
+import { isSessionValid } from '../utils/auth'; // Import session check function
 
 const routes = [
-    { path: '/', component: Login }, // Default page is Login
-    { path: '/register', component: Register },
-    { path: '/profile', component: Profile },
+    { path: '/', redirect: '/auth' },
+    { path: '/auth', component: Auth },
+    { path: '/home', component: Home, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({
-    history: createWebHashHistory(), // Use hash mode for GitHub Pages
+    history: createWebHashHistory(), // Hash mode for GitHub Pages
     routes,
+});
+
+// Navigation Guard: Redirect users if they are not logged in
+router.beforeEach((to, from, next) => {
+    if (to.meta.requiresAuth && !isSessionValid()) {
+        next('/auth'); // Redirect to login if session is invalid
+    } else if (to.path === '/auth' && isSessionValid()) {
+        next('/home'); // Redirect logged-in users to home if they visit auth
+    } else {
+        next(); // Proceed normally
+    }
 });
 
 export default router;
