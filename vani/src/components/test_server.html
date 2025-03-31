@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Server</title>
+</head>
+
+<body>
+    <script>
+        window.addEventListener("message", (event) => {
+            console.log("Received message:", event.data);
+
+            // Echo back the received request
+            const { action, payload, requestId } = event.data;
+            window.parent.postMessage({
+                requestId,
+                success: true,
+                data: { receivedAction: action, receivedPayload: payload }
+            }, "*");
+        });
+    </script>
+</body>
+
+</html>

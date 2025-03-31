@@ -1,53 +1,131 @@
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { setUserSession } from "../../utils/auth";
+<script>
+import { ref, computed, reactive, inject } from "vue";
 
-defineProps({
-  switchView: {
-    type: Function,
-    required: true,
+export default {
+  setup() {
+    const sendRequest = inject("sendRequest");
+    const username = ref("");
+    const password = ref("");
+    const showPassword = ref(false);
+    const login_progress_status = reactive({ hasError: false, msg: "" });
+
+    const togglePassword = () => {
+      showPassword.value = !showPassword.value;
+    };
+
+    const handleLogin = async () => {
+      alert("loggin in");
+      if (!username.value || !password.value) {
+        login_progress_status.msg = "Both fields are required!";
+        login_progress_status.hasError = true;
+        return;
+      }
+
+      try {
+        login_progress_status.hasError = true;
+        login_progress_status.msg = "validating";
+        console.log(login_progress_status);
+        const response = await sendRequest("login", {
+          username: username.value,
+          password: password.value,
+        });
+
+        login_progress_status.hasError = false;
+        if (response.is_success) {
+          console.log("Login successful:", response.data);
+        } else {
+          login_progress_status.msg = "Invalid credentials";
+          login_progress_status.hasError = true;
+        }
+      } catch (error) {
+        login_progress_status.msg = "Error communicating with server";
+        login_progress_status.hasError = true;
+        console.error(error);
+      }
+    };
+
+    const allowSubmit = computed(() => {
+      return username.value && password.value;
+    });
+
+    return {
+      username,
+      password,
+      showPassword,
+      togglePassword,
+      handleLogin,
+      login_progress_status,
+      allowSubmit,
+    };
   },
-});
-
-const router = useRouter();
-const username = ref("");
-const password = ref("");
-
-const login = () => {
-  if (username.value && password.value) {
-    setUserSession({ username: username.value });
-    router.push("/home");
-  } else {
-    alert("Please enter credentials.");
-  }
 };
 </script>
 
 <template>
-  <div class="p-6 bg-gray-100 rounded shadow-md w-80">
-    <h2 class="text-2xl font-bold mb-4">Login</h2>
-    <input
-      v-model="username"
-      type="text"
-      placeholder="Username"
-      class="w-full p-2 mb-2 border rounded"
-    />
-    <input
-      v-model="password"
-      type="password"
-      placeholder="Password"
-      class="w-full p-2 mb-2 border rounded"
-    />
-    <button @click="login" class="w-full p-2 bg-blue-500 text-white rounded">
-      Login
-    </button>
-    
-    <p class="mt-2 text-sm">
-      Don't have an account?
-      <button @click="$emit('switchView', 'register')" class="text-blue-500 underline">
-        Register
-      </button>
-    </p>
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card p-4">
+        <h3 class="mb-4 text-center">Login</h3>
+        <form @submit.prevent="handleLogin(false)">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              v-model="username"
+              class="form-control"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <input
+                id="password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                @click="togglePassword"
+                class="btn btn-outline-secondary"
+              >
+                {{ showPassword ? "Hide" : "Show" }}
+              </button>
+            </div>
+          </div>
+          <div class="d-flex flex-column justify-content-center">
+            <h5
+              v-if="login_progress_status.haserror"
+              class="text-danger justify-content-center"
+            >
+              {{ login_progress_status.msg }}
+            </h5>
+            <button v-if="!allowSubmit" type="submit" class="btn btn-danger" disabled>
+              cannot Login
+            </button>
+            <button
+              v-else-if="username === 'guest' && password === 'guest'"
+              type="submit"
+              class="btn btn-warning"
+            >
+              Login as guest
+            </button>
+            <button v-else type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.card {
+  max-width: 400px;
+  margin: auto;
+}
+</style>

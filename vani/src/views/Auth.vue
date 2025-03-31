@@ -1,22 +1,33 @@
 <script setup>
-import { ref } from "vue";
-import ServerIframe from "../components/serverIframe.vue";
+import { ref, computed, onMounted } from "vue";
+import Login from "../components/auth/Login.vue";
+import Register from "../components/auth/Register.vue";
+import Profile from "../components/auth/Profile.vue";
+import { isSessionValid } from "../utils/auth"; // Import session check function
 
-const serverRef = ref(null);
+const is_authenticated = ref(false);
+const currentView = ref("login"); // Default view
 
-const login = () => {
-    if (serverRef.value?.isReady) {
-        serverRef.value.sendMessageToIframe({ action: "login", username: "testUser", password: "testPass" });
-    } else {
-        console.warn("Server not ready yet!");
-    }
+onMounted(() => {
+  is_authenticated.value = isSessionValid();
+});
+// Function to switch views
+const setView = (view) => {
+  currentView.value = view;
 };
 </script>
 
 <template>
-    <ServerIframe ref="serverRef" />
-    <div class="flex flex-col items-center space-y-4">
-        <h1 class="text-xl font-bold">Login</h1>
-        <button @click="login" class="px-4 py-2 bg-blue-500 text-white rounded">Login</button>
+  <div class="flex flex-col items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
+      <template v-if="is_authenticated">
+        <Profile @logout="is_authenticated = false" />
+      </template>
+
+      <template v-else>
+        <Login v-if="currentView === 'login'" @switch="setView" />
+        <Register v-else-if="currentView === 'register'" @switch="setView" />
+      </template>
     </div>
+  </div>
 </template>
