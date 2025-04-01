@@ -26,14 +26,9 @@ const handleLogin = async () => {
       username: username.value,
       password: password.value,
     });
-
-    if (response.is_success) {
-      console.log("Login successful:", response.data);
-      login_progress_status.msg = "Login successful!";
-    } else {
-      login_progress_status.msg = "Invalid credentials";
-      login_progress_status.hasError = true;
-    }
+    
+    console.log("Response received from iframe", response)
+    
   } catch (error) {
     login_progress_status.msg = "Error communicating with server";
     login_progress_status.hasError = true;

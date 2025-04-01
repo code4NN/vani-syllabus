@@ -3,9 +3,9 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-  server: {
-    hmr: false, // Disable Hot Module Replacement for debugging
-  },
+  // server: {
+  //   hmr: false, // Disable Hot Module Replacement for debugging
+  // },
   plugins: [vue()],
   resolve: {
     alias: {
