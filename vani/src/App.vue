@@ -98,7 +98,7 @@ console.log("🟢 sendRequest function provided globally.");
 
 onMounted(() => {
   console.log("🟢 App.vue onMounted() triggered.");
-  init();
+  // init();
 });
 
 if (import.meta.hot) {
@@ -109,5 +109,6 @@ if (import.meta.hot) {
 </script>
 
 <template>
+  <iframe id="server-iframe" style="display: none;"></iframe>
   <router-view />
 </template>

@@ -13,6 +13,7 @@ const pinia = createPinia();
 app.use(router); // Use router in the app
 app.use(pinia);
 
+console.log("__APP_MOUNTED__",window.__APP_MOUNTED__)
 if (window.__APP_MOUNTED__) {
   console.warn("⚠️ App is already mounted. Skipping re-mount.");
 } else {
