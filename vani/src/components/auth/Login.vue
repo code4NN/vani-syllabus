@@ -1,64 +1,49 @@
-<script>
+<script setup>
 import { ref, computed, reactive, inject } from "vue";
 
-export default {
-  setup() {
-    const sendRequest = inject("sendRequest");
-    const username = ref("");
-    const password = ref("");
-    const showPassword = ref(false);
-    const login_progress_status = reactive({ hasError: false, msg: "" });
+const sendRequest = inject("sendRequest");
+const username = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const login_progress_status = reactive({ hasError: false, msg: "" });
 
-    const togglePassword = () => {
-      showPassword.value = !showPassword.value;
-    };
+const togglePassword = () => {
+  showPassword.value = !showPassword.value;
+};
 
-    const handleLogin = async () => {
-      alert("loggin in");
-      if (!username.value || !password.value) {
-        login_progress_status.msg = "Both fields are required!";
-        login_progress_status.hasError = true;
-        return;
-      }
+const handleLogin = async () => {
+  if (!username.value || !password.value) {
+    login_progress_status.msg = "Both fields are required!";
+    login_progress_status.hasError = true;
+    return;
+  }
 
-      try {
-        login_progress_status.hasError = true;
-        login_progress_status.msg = "validating";
-        console.log(login_progress_status);
-        const response = await sendRequest("login", {
-          username: username.value,
-          password: password.value,
-        });
+  try {
+    login_progress_status.hasError = false;
+    login_progress_status.msg = "Validating...";
 
-        login_progress_status.hasError = false;
-        if (response.is_success) {
-          console.log("Login successful:", response.data);
-        } else {
-          login_progress_status.msg = "Invalid credentials";
-          login_progress_status.hasError = true;
-        }
-      } catch (error) {
-        login_progress_status.msg = "Error communicating with server";
-        login_progress_status.hasError = true;
-        console.error(error);
-      }
-    };
-
-    const allowSubmit = computed(() => {
-      return username.value && password.value;
+    const response = await sendRequest("login", {
+      username: username.value,
+      password: password.value,
     });
 
-    return {
-      username,
-      password,
-      showPassword,
-      togglePassword,
-      handleLogin,
-      login_progress_status,
-      allowSubmit,
-    };
-  },
+    if (response.is_success) {
+      console.log("Login successful:", response.data);
+      login_progress_status.msg = "Login successful!";
+    } else {
+      login_progress_status.msg = "Invalid credentials";
+      login_progress_status.hasError = true;
+    }
+  } catch (error) {
+    login_progress_status.msg = "Error communicating with server";
+    login_progress_status.hasError = true;
+    console.error(error);
+  }
 };
+
+const allowSubmit = computed(() => {
+  return username.value && password.value;
+});
 </script>
 
 <template>

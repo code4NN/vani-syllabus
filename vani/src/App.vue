@@ -1,12 +1,20 @@
 <script setup>
 import { provide, onMounted, ref } from "vue";
+import { useQueueStore } from "@/store/queue";
 
 console.log("🟢 App.vue setup() called"); // Ensures this runs only once
 
 const iframe = ref(null);
-const pendingRequests = new Map();
+const queueStore = useQueueStore();
+let isInitialized = false;
 
 const init = () => {
+  if (isInitialized) {
+    console.warn("⚠️ init() called again, but already initialized. Skipping...");
+    return;
+  }
+  isInitialized = true;
+
   console.log("🔵 init() function called");
 
   if (iframe.value) {
@@ -36,17 +44,17 @@ const sendRequest = (action, payload = {}) => {
     }
 
     const requestId = Date.now() + Math.random();
-    pendingRequests.set(requestId, { resolve, reject });
+    queueStore.addRequest({ requestId, resolve, reject });
 
     console.log(`📤 Sending request to iframe:`, { action, payload, requestId });
     iframe.value.contentWindow.postMessage({ action, payload, requestId }, "*");
 
     // Timeout to prevent infinite waiting
     setTimeout(() => {
-      if (pendingRequests.has(requestId)) {
+      if (queueStore.getRequest(requestId)) {
         console.error("⏳ Timeout: No response from iframe.");
-        pendingRequests.get(requestId).reject("No response received");
-        pendingRequests.delete(requestId);
+        queueStore.getRequest(requestId).reject("No response received");
+        queueStore.removeRequest(requestId);
       }
     }, 10000);
   });
@@ -70,17 +78,16 @@ const handleMessage = (event) => {
 
   const { requestId, success, data, error } = event.data;
 
-  console.log("🗂 Checking pendingRequests queue:", pendingRequests);
+  console.log("🗂 Checking requestQueue in store:", queueStore.requestQueue);
 
-  if (pendingRequests.has(requestId)) {
+  const request = queueStore.getRequest(requestId);
+  if (request) {
     console.log(`✅ Resolving request ${requestId}`);
-    const { resolve, reject } = pendingRequests.get(requestId);
-    pendingRequests.delete(requestId);
-
-    success ? resolve(data) : reject(error);
+    success ? request.resolve(data) : request.reject(error);
+    queueStore.removeRequest(requestId);
   } else {
     console.warn(
-      `⚠️ requestId ${requestId} not found in pendingRequests. Possible duplicate message?`
+      `⚠️ requestId ${requestId} not found in requestQueue. Possible duplicate message?`
     );
   }
 };
@@ -93,6 +100,12 @@ onMounted(() => {
   console.log("🟢 App.vue onMounted() triggered.");
   init();
 });
+
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    console.log("🔄 HMR triggered for App.vue");
+  });
+}
 </script>
 
 <template>
