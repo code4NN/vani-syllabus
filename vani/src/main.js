@@ -5,17 +5,22 @@ import './style.css'
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router'; // Import the router
-import { createPinia } from 'pinia';
+// import { createPinia } from 'pinia';
 
-
-if (window.self !== window.top) {
-  console.log("Skipping Vue inside iframe...------------------------------------------------------")
-}
-else {
-
-  const app = createApp(App);
-  const pinia = createPinia();
+const app = createApp(App);
   app.use(router); // Use router in the app
-  app.use(pinia);
   app.mount('#app');
-}
+
+
+
+// if (window.self !== window.top) {
+//   console.log("Skipping Vue inside iframe...------------------------------------------------------")
+// }
+// else {
+
+//   const app = createApp(App);
+//   // const pinia = createPinia();
+//   app.use(router); // Use router in the app
+//   // app.use(pinia);
+//   app.mount('#app');
+// }

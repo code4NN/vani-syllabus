@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, reactive, inject } from "vue";
+import {useRouter} from "vue-router";
+const router = useRouter()
 
 const sendRequest = inject("sendRequest");
 const username = ref("");
@@ -10,6 +12,7 @@ const login_progress_status = reactive({ hasError: false, msg: "" });
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
 };
+
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
@@ -22,13 +25,12 @@ const handleLogin = async () => {
     login_progress_status.hasError = false;
     login_progress_status.msg = "Validating...";
 
-    const response = await sendRequest("login", {
-      username: username.value,
-      password: password.value,
-    });
-    
-    console.log("Response received from iframe", response)
-    
+    // const response = await sendRequest("login", {
+    //   username: username.value,
+    //   password: password.value,
+    // });
+
+    // console.log("Response received from iframe", response)
   } catch (error) {
     login_progress_status.msg = "Error communicating with server";
     login_progress_status.hasError = true;
@@ -42,8 +44,7 @@ const allowSubmit = computed(() => {
 </script>
 
 <template>
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
+  <div class="flex flex-column justify-content-center align-items-center">
       <div class="card p-4">
         <h3 class="mb-4 text-center">Login</h3>
         <form @submit.prevent="handleLogin(false)">
@@ -99,7 +100,6 @@ const allowSubmit = computed(() => {
           </div>
         </form>
       </div>
-    </div>
   </div>
 </template>
 

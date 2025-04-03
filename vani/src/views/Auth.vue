@@ -1,33 +1,41 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import Login from "../components/auth/Login.vue";
-import Register from "../components/auth/Register.vue";
-import Profile from "../components/auth/Profile.vue";
-import { isSessionValid } from "../utils/auth"; // Import session check function
+import { computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { isSessionValid } from "@/utils/auth";
 
-const is_authenticated = ref(false);
-const currentView = ref("login"); // Default view
+const router = useRouter();
+const route = useRoute();
 
+// Redirect if the user is already logged in
 onMounted(() => {
-  is_authenticated.value = isSessionValid();
+  if (isSessionValid()) {
+    router.replace("/home");
+  }
 });
-// Function to switch views
-const setView = (view) => {
-  currentView.value = view;
+
+// Check if we're on the login or register page
+const isLogin = computed(() => route.path === "/auth/login");
+const isProfile = computed(() => route.path === "/auth/profile");
+
+// Navigate between login and register
+const switchAuthView = () => {
+  router.push(isLogin.value ? "/auth/register" : "/auth/login");
 };
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen">
-    <div class="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
-      <template v-if="is_authenticated">
-        <Profile @logout="is_authenticated = false" />
-      </template>
-
-      <template v-else>
-        <Login v-if="currentView === 'login'" @switch="setView" />
-        <Register v-else-if="currentView === 'register'" @switch="setView" />
-      </template>
+  <div class="d-flex flex-column p-2">
+    <router-view />
+    <!-- Renders Login.vue or Register.vue -->
+    <div class="d-flex justify-content-center mt-3">
+      <button
+        class="btn"
+        :class="isLogin ? 'btn-primary' : 'btn-success'"
+        @click="switchAuthView"
+        v-if="!isProfile"
+      >
+        {{ isLogin ? "Create an Account" : "Go to Login" }}
+      </button>
     </div>
   </div>
 </template>
