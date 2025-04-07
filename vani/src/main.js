@@ -3,24 +3,19 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // For JavaScript components
 import './style.css'
 
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import { useAuthStore } from '@/stores/auth'
+import router from './router';
 import App from './App.vue';
-import router from './router'; // Import the router
-// import { createPinia } from 'pinia';
 
 const app = createApp(App);
-  app.use(router); // Use router in the app
-  app.mount('#app');
 
+const pinia = createPinia(); 
+app.use(pinia);
 
+const auth = useAuthStore()
+auth.loadFromStorage()
 
-// if (window.self !== window.top) {
-//   console.log("Skipping Vue inside iframe...------------------------------------------------------")
-// }
-// else {
+app.use(router);
 
-//   const app = createApp(App);
-//   // const pinia = createPinia();
-//   app.use(router); // Use router in the app
-//   // app.use(pinia);
-//   app.mount('#app');
-// }
+app.mount('#app');

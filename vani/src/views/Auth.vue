@@ -1,17 +1,9 @@
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { isSessionValid } from "@/utils/auth";
 
 const router = useRouter();
 const route = useRoute();
-
-// Redirect if the user is already logged in
-onMounted(() => {
-  if (isSessionValid()) {
-    router.replace("/home");
-  }
-});
 
 // Check if we're on the login or register page
 const isLogin = computed(() => route.path === "/auth/login");
@@ -26,6 +18,7 @@ const switchAuthView = () => {
 <template>
   <div class="d-flex flex-column p-2">
     <router-view />
+    
     <!-- Renders Login.vue or Register.vue -->
     <div class="d-flex justify-content-center mt-3">
       <button
