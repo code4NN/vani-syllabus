@@ -16,7 +16,7 @@ const switchAuthView = () => {
 </script>
 
 <template>
-  <div class="d-flex flex-column p-2">
+  <div class="d-flex flex-column justify-content-center p-2">
     <router-view />
     
     <!-- Renders Login.vue or Register.vue -->

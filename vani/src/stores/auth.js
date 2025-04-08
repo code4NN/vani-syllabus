@@ -70,7 +70,6 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = () => {
         user.value = null
         token.value = null
-        approved.value = false
         lastLogin.value = null
         localStorage.clear()
     }
@@ -85,7 +84,6 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         user,
         token,
-        approved,
         lastLogin,
         isSessionValid,
         getFeature,
