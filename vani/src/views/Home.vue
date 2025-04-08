@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 //import ServerIframe from "../components/serverIframe.vue";
-import { clearUserSession } from "../utils/auth"; // Import session check function
+// import { clearUserSession } from "../utils/auth"; // Import session check function
 const serverRef = ref(null);
 
 const fetchData = () => {
